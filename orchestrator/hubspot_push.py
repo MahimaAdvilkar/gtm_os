@@ -13,30 +13,15 @@ def _headers() -> dict:
 
 
 def _upsert_company(plan: GTMPlan) -> str:
-    """Create or update a HubSpot company, return its ID."""
-    payload = {
-        "properties": {
-            "name": plan.company_name,
-            "gtm_tier": plan.tier,
-            "gtm_score": str(plan.composite_score),
-            "gtm_objective": plan.objective,
-            "gtm_sequence_days": str(plan.sequence_days),
-            "gtm_signal": plan.signal_type,
-        }
-    }
-
-    # Search for existing company first
     search_resp = httpx.post(
         f"{HUBSPOT_BASE}/crm/v3/objects/companies/search",
         headers=_headers(),
         json={
-            "filterGroups": [{
-                "filters": [{
-                    "propertyName": "name",
-                    "operator": "EQ",
-                    "value": plan.company_name,
-                }]
-            }],
+            "filterGroups": [{"filters": [{
+                "propertyName": "name",
+                "operator": "EQ",
+                "value": plan.company_name,
+            }]}],
             "limit": 1,
         },
         timeout=15,
@@ -44,37 +29,38 @@ def _upsert_company(plan: GTMPlan) -> str:
     search_resp.raise_for_status()
     results = search_resp.json().get("results", [])
 
+    # Only standard HubSpot properties — no custom fields needed
+    payload = {
+        "properties": {
+            "name": plan.company_name,
+            "description": f"GTM OS | Tier {plan.tier} | Score {plan.composite_score} | Signal: {plan.signal_type}",
+        }
+    }
+
     if results:
         company_id = results[0]["id"]
         httpx.patch(
             f"{HUBSPOT_BASE}/crm/v3/objects/companies/{company_id}",
-            headers=_headers(),
-            json=payload,
-            timeout=15,
+            headers=_headers(), json=payload, timeout=15,
         ).raise_for_status()
     else:
-        create_resp = httpx.post(
+        resp = httpx.post(
             f"{HUBSPOT_BASE}/crm/v3/objects/companies",
-            headers=_headers(),
-            json=payload,
-            timeout=15,
+            headers=_headers(), json=payload, timeout=15,
         )
-        create_resp.raise_for_status()
-        company_id = create_resp.json()["id"]
+        resp.raise_for_status()
+        company_id = resp.json()["id"]
 
     return company_id
 
 
 def _create_deal(plan: GTMPlan, company_id: str) -> str:
-    """Create a HubSpot deal linked to the company."""
     payload = {
         "properties": {
-            "dealname": f"[GTM OS] {plan.company_name} — {plan.signal_type}",
+            "dealname": f"[GTM OS] {plan.company_name} — {plan.signal_type.replace('_', ' ').title()}",
             "pipeline": "default",
             "dealstage": "appointmentscheduled",
-            "gtm_tier": plan.tier,
-            "gtm_top_persona": plan.top_persona,
-            "gtm_top_channel": plan.top_channel,
+            "description": f"Tier {plan.tier} | Top persona: {plan.top_persona} | Channel: {plan.top_channel} | {plan.objective}",
         },
         "associations": [{
             "to": {"id": company_id},
@@ -84,16 +70,13 @@ def _create_deal(plan: GTMPlan, company_id: str) -> str:
 
     resp = httpx.post(
         f"{HUBSPOT_BASE}/crm/v3/objects/deals",
-        headers=_headers(),
-        json=payload,
-        timeout=15,
+        headers=_headers(), json=payload, timeout=15,
     )
     resp.raise_for_status()
     return resp.json()["id"]
 
 
 def push_gtm_plan(plan: GTMPlan) -> dict:
-    """Push a GTM plan into HubSpot as a company + deal."""
     company_id = _upsert_company(plan)
     deal_id = _create_deal(plan, company_id)
     return {
