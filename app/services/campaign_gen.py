@@ -62,23 +62,15 @@ class CampaignGenerator:
             for m in committee.members
         )
 
-        prompt = f"""You are a GTM strategist. Design a multi-touch campaign strategy.
+        prompt = f"""GTM strategist. Return ONLY a JSON object, no explanation.
 
-Account: {account.name} | Industry: {account.industry} | Tier: {score.tier} (score={score.composite_score})
-Tech Stack: {', '.join(account.tech_stack) or 'unknown'}
+Account: {account.name} | {account.industry} | Tier {score.tier} | Score {score.composite_score}
+Committee: {personas_summary}
 
-Buying Committee:
-{personas_summary}
+JSON format (max 4 tactics):
+{{"objective":"...","sequence_days":30,"estimated_pipeline":500000,"notes":"...","tactics":[{{"channel":"email","message":"...","cta":"...","target_persona":"...","priority":1}}]}}
 
-Return a JSON object with:
-- objective (string)
-- sequence_days (int)
-- estimated_pipeline (float, USD)
-- notes (string)
-- tactics (array of objects with: channel, message, cta, target_persona, priority 1-5)
-  channel must be one of: email, linkedin, paid_search, content, outbound_call, webinar, direct_mail
-
-Respond with only valid JSON."""
+Channels allowed: email, linkedin, paid_search, content, outbound_call, webinar, direct_mail"""
 
         message = self.client.messages.create(
             model="claude-sonnet-4-6",
@@ -87,10 +79,12 @@ Respond with only valid JSON."""
         )
 
         raw = message.content[0].text.strip()
-        if raw.startswith("```"):
-            raw = raw.split("```")[1]
-            if raw.startswith("json"):
-                raw = raw[4:]
+        # Strip markdown code fences if present
+        if "```" in raw:
+            raw = raw.split("```")[1].lstrip("json").strip()
+        # Extract JSON object
+        start, end = raw.find("{"), raw.rfind("}") + 1
+        raw = raw[start:end]
         data = json.loads(raw)
 
         tactics = [CampaignTactic(**t) for t in data.pop("tactics", [])]
