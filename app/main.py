@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from app.api.routes import accounts, campaigns, outcomes
+from orchestrator.webhook import router as webhook_router
 
 app = FastAPI(
     title="GTM OS",
@@ -10,6 +11,7 @@ app = FastAPI(
 app.include_router(accounts.router)
 app.include_router(campaigns.router)
 app.include_router(outcomes.router)
+app.include_router(webhook_router)
 
 
 @app.get("/health")

@@ -1,0 +1,53 @@
+from orchestrator.models import IncomingSignal, GTMPlan
+from app.models.account import Account, Industry
+from app.services.account_scorer import AccountScorer
+from app.services.committee_sim import CommitteeSimulator
+from app.services.campaign_gen import CampaignGenerator
+
+
+scorer = AccountScorer()
+simulator = CommitteeSimulator()
+generator = CampaignGenerator()
+
+# Maps signal type → estimated employee count + revenue boost for scoring
+SIGNAL_BOOSTS: dict[str, dict] = {
+    "funding_round":      {"employee_count": 500, "revenue": 20_000_000},
+    "leadership_change":  {"employee_count": 200, "revenue": 5_000_000},
+    "product_launch":     {"employee_count": 300, "revenue": 10_000_000},
+    "hiring_surge":       {"employee_count": 400, "revenue": 15_000_000},
+    "tech_install":       {"employee_count": 150, "revenue": 3_000_000},
+}
+
+
+def route(signal: IncomingSignal) -> GTMPlan:
+    boost = SIGNAL_BOOSTS.get(signal.signal_type, {})
+
+    # Build a synthetic account from the signal
+    account = Account(
+        id=signal.company_name.lower().replace(" ", "-"),
+        name=signal.company_name,
+        industry=Industry.saas,           # default; enrich with Kalibr later
+        employee_count=boost.get("employee_count", 100),
+        annual_revenue=boost.get("revenue", 1_000_000),
+        tech_stack=[],
+    )
+
+    score = scorer.score(account)
+    committee = simulator.simulate(account)
+    strategy = generator.generate(account, score, committee)
+
+    top_member = max(committee.members, key=lambda m: m.influence_score)
+    top_tactic = min(strategy.tactics, key=lambda t: t.priority) if strategy.tactics else None
+
+    return GTMPlan(
+        company_name=signal.company_name,
+        signal_type=signal.signal_type,
+        tier=score.tier,
+        composite_score=score.composite_score,
+        committee_size=len(committee.members),
+        top_persona=top_member.title,
+        top_channel=top_tactic.channel if top_tactic else "email",
+        objective=strategy.objective,
+        sequence_days=strategy.sequence_days,
+        raw_tactics=[t.model_dump() for t in strategy.tactics],
+    )
