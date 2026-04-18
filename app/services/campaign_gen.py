@@ -4,6 +4,7 @@ from app.models.campaign import CampaignStrategy, CampaignTactic, CampaignChanne
 from app.config import settings
 import anthropic
 import json
+from json import JSONDecodeError
 
 
 class CampaignGenerator:
@@ -65,11 +66,14 @@ class CampaignGenerator:
         prompt = f"""GTM strategist. Return ONLY a JSON object, no explanation.
 
 Account: {account.name} | {account.industry} | Tier {score.tier} | Score {score.composite_score}
+Signal Type: {account.signal_type or 'unknown'}
+Source Evidence: {account.signal_context or 'not provided'}
 Committee: {personas_summary}
 
 JSON format (max 4 tactics):
 {{"objective":"...","sequence_days":30,"estimated_pipeline":500000,"notes":"...","tactics":[{{"channel":"email","message":"...","cta":"...","target_persona":"...","priority":1}}]}}
 
+Each tactic must reference the signal evidence or the inferred business change. Avoid generic "checking in" language.
 Channels allowed: email, linkedin, paid_search, content, outbound_call, webinar, direct_mail"""
 
         message = self.client.messages.create(
@@ -78,14 +82,22 @@ Channels allowed: email, linkedin, paid_search, content, outbound_call, webinar,
             messages=[{"role": "user", "content": prompt}],
         )
 
-        raw = message.content[0].text.strip()
-        # Strip markdown code fences if present
-        if "```" in raw:
-            raw = raw.split("```")[1].lstrip("json").strip()
-        # Extract JSON object
-        start, end = raw.find("{"), raw.rfind("}") + 1
-        raw = raw[start:end]
-        data = json.loads(raw)
+        try:
+            raw = message.content[0].text.strip()
+            # Strip markdown code fences if present.
+            if "```" in raw:
+                fenced = raw.split("```")
+                raw = fenced[1] if len(fenced) > 1 else raw
+                raw = raw.removeprefix("json").strip()
 
-        tactics = [CampaignTactic(**t) for t in data.pop("tactics", [])]
-        return CampaignStrategy(account_id=account.id, tactics=tactics, **data)
+            # Extract JSON object from any extra wrapper text.
+            start, end = raw.find("{"), raw.rfind("}") + 1
+            if start >= 0 and end > start:
+                raw = raw[start:end]
+
+            data = json.loads(raw)
+            tactics = [CampaignTactic(**t) for t in data.pop("tactics", [])]
+            return CampaignStrategy(account_id=account.id, tactics=tactics, **data)
+        except (JSONDecodeError, ValueError, KeyError, TypeError):
+            # Fall back to deterministic campaign generation for reliability.
+            return self.generate(account, score, committee)

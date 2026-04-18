@@ -78,6 +78,16 @@
       font-size: 12px;
       font-weight: 500;
     }
+    .sub-badge {
+      margin-left: 10px;
+      background: rgba(34,197,94,0.1);
+      border: 1px solid rgba(34,197,94,0.22);
+      color: #86efac;
+      padding: 4px 12px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 500;
+    }
     main {
       max-width: 920px;
       margin: 0 auto;
@@ -98,6 +108,12 @@
       margin-bottom: 16px;
     }
     .hero p { color: var(--muted); font-size: 18px; max-width: 520px; margin: 0 auto; line-height: 1.6; }
+    .hero-note {
+      margin-top: 16px;
+      color: #bcb6df;
+      font-size: 13px;
+      line-height: 1.7;
+    }
     .input-card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -105,9 +121,47 @@
       padding: 32px;
       margin-bottom: 40px;
     }
+    .stack-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .input-copy {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .preset-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 14px 0 18px;
+    }
+    .preset-btn {
+      background: rgba(124,92,252,0.08);
+      color: #ddd6fe;
+      border: 1px solid rgba(124,92,252,0.2);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .preset-btn:hover {
+      border-color: rgba(124,92,252,0.45);
+      background: rgba(124,92,252,0.14);
+    }
     .input-row {
       display: grid;
-      grid-template-columns: 1fr 200px auto;
+      grid-template-columns: minmax(0, 1.2fr) 220px 220px auto;
       gap: 12px;
       align-items: end;
     }
@@ -152,6 +206,13 @@
     .toggle-row {
       display: flex; align-items: center; gap: 10px;
       margin-top: 16px; padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+    .toggle-stack {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+      padding-top: 16px;
       border-top: 1px solid var(--border);
     }
     .toggle-label { font-size: 13px; color: var(--muted); cursor: pointer; user-select: none; }
@@ -231,10 +292,137 @@
     }
     .objective-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--accent2); font-weight: 600; margin-bottom: 10px; }
     .objective-text { font-size: 15px; line-height: 1.7; color: var(--text); }
+    .truth-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .truth-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+    }
+    .truth-card strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--accent2);
+    }
+    .truth-card span {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #d4d0f0;
+    }
 
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
     .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
     .panel-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-bottom: 16px; font-weight: 600; }
+    .panel-copy { font-size: 14px; line-height: 1.7; color: #d4d0f0; }
+    .meta-list { display: grid; gap: 10px; }
+    .meta-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #d4d0f0;
+    }
+    .meta-item strong {
+      color: var(--text);
+      display: block;
+      margin-bottom: 6px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+    .meta-item a { color: var(--accent2); }
+    .assumption-list { display: grid; gap: 10px; }
+    .assumption {
+      font-size: 13px;
+      line-height: 1.6;
+      color: #c4bedf;
+      padding-left: 16px;
+      position: relative;
+    }
+    .assumption::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: var(--accent2);
+    }
+    .scan-results {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .scan-item {
+      border: 1px solid var(--border);
+      background: rgba(124,92,252,0.05);
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .scan-item strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+    .verify-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #86efac;
+      background: rgba(34,197,94,0.1);
+      border: 1px solid rgba(34,197,94,0.22);
+      border-radius: 999px;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      margin: 6px 0 8px;
+    }
+    .scan-item a {
+      color: var(--accent2);
+      font-size: 13px;
+    }
+    .warm-path {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border: 1px solid rgba(245,158,11,0.28);
+      background: rgba(245,158,11,0.08);
+      border-radius: 10px;
+      color: #fde68a;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .error-card {
+      max-width: 720px;
+      margin: 24px auto;
+      padding: 18px;
+      border: 1px solid rgba(245,158,11,0.35);
+      background: rgba(245,158,11,0.08);
+      border-radius: 14px;
+      color: #fde68a;
+      line-height: 1.6;
+    }
+    .error-card strong {
+      display: block;
+      color: #fff7d6;
+      margin-bottom: 6px;
+    }
+    .error-card button {
+      margin-top: 12px;
+      background: rgba(245,158,11,0.18);
+      color: #fde68a;
+      border: 1px solid rgba(245,158,11,0.35);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
 
     .persona { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
     .persona:last-child { border-bottom: none; }
@@ -283,6 +471,7 @@
     @media (max-width: 700px) {
       .input-row { grid-template-columns: 1fr; }
       .stats { grid-template-columns: 1fr 1fr; }
+      .truth-strip { grid-template-columns: 1fr; }
       .two-col { grid-template-columns: 1fr; }
       .hero h1 { font-size: 32px; }
       header { padding: 16px 20px; }
@@ -300,15 +489,25 @@
     </div>
   </div>
   <div class="badge">Claude + Apify + HubSpot</div>
+  <div class="sub-badge">Signal → Reasoning → CRM Action</div>
 </header>
 
 <main>
   <div class="hero">
-    <h1>Turn Signals Into<br>Revenue Pipeline</h1>
-    <p>Enter any company. GTM OS detects buying signals, simulates the buying committee with AI, and generates a personalized campaign — in seconds.</p>
+    <h1>From Market Signal<br>To CRM-Ready Pipeline</h1>
+    <p>GTM OS turns funding, hiring, and launch signals into researched outbound opportunities with a suggested account strategy, likely buying committee, and first action.</p>
+    <div class="hero-note">Built for lean outbound, RevOps, and founder-led sales teams selling into high-growth B2B software accounts.</div>
   </div>
 
   <div class="input-card">
+    <div class="input-copy">
+      <div>Pick one company signal. We will show why it matters now, why the account is worth working, who likely matters in the buying committee, and what a rep should do first.</div>
+    </div>
+    <div class="preset-row">
+      <button type="button" class="preset-btn" onclick="applyPreset('Cursor','funding_round',100000000)">Cursor • funding</button>
+      <button type="button" class="preset-btn" onclick="applyPreset('Ramp','hiring_surge','')">Ramp • hiring</button>
+      <button type="button" class="preset-btn" onclick="applyPreset('Rippling','product_launch','')">Rippling • launch</button>
+    </div>
     <div class="input-row">
       <div class="field">
         <label>Company Name</label>
@@ -322,27 +521,77 @@
           <option value="product_launch">🚀 Product Launch</option>
           <option value="leadership_change">👤 Leadership Change</option>
           <option value="tech_install">🔧 Tech Install</option>
+          <option value="employee_post">💬 Employee Post</option>
         </select>
+      </div>
+      <div class="field">
+        <label>Signal Amount</label>
+        <input type="text" id="amount" placeholder="optional, e.g. 100000000" />
       </div>
       <button class="run-btn" id="runBtn" onclick="runPipeline()">
         Run Pipeline →
       </button>
     </div>
-    <div class="toggle-row">
-      <label class="switch">
-        <input type="checkbox" id="hsToggle" />
-        <span class="slider"></span>
-      </label>
-      <label class="toggle-label" for="hsToggle">
-        <strong>Push to HubSpot</strong> — creates company + deal automatically
-      </label>
+    <div class="toggle-stack">
+      <div class="toggle-row">
+        <label class="switch">
+          <input type="checkbox" id="liveToggle" checked />
+          <span class="slider"></span>
+        </label>
+        <label class="toggle-label" for="liveToggle">
+          <strong>Use Live Apify Signals</strong> — runs targeted real-world news searches before generating the GTM plan
+        </label>
+      </div>
+      <div class="toggle-row">
+        <label class="switch">
+          <input type="checkbox" id="hsToggle" />
+          <span class="slider"></span>
+        </label>
+        <label class="toggle-label" for="hsToggle">
+          <strong>Push to HubSpot</strong> — creates company + deal automatically
+        </label>
+      </div>
     </div>
+  </div>
+
+  <div class="stack-card">
+    <div class="input-copy">
+      <div>Or scan the market. This mode looks for recent live web results in the last 30 days and returns candidate companies that match your signal.</div>
+    </div>
+    <div class="input-row" style="grid-template-columns: 220px 220px minmax(0,1fr) auto;">
+      <div class="field">
+        <label>Scan Signal</label>
+        <select id="scanSignal">
+          <option value="funding_round">💰 Funding Round</option>
+          <option value="hiring_surge">📈 Hiring Surge</option>
+          <option value="product_launch">🚀 Product Launch</option>
+          <option value="leadership_change">👤 Leadership Change</option>
+          <option value="tech_install">🔧 Tech Install</option>
+          <option value="employee_post">💬 Employee Post</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Timeline</label>
+        <select id="scanDays">
+          <option value="30">Last 30 days</option>
+          <option value="14">Last 14 days</option>
+          <option value="7">Last 7 days</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Focus</label>
+        <input type="text" id="scanFocus" value="B2B SaaS" />
+      </div>
+      <button class="run-btn" onclick="runMarketScan()">Scan Leads →</button>
+    </div>
+    <div id="scanResults" class="scan-results"></div>
   </div>
 
   <div class="loader" id="loader">
     <div class="spinner"></div>
     <div class="loader-steps" id="loaderSteps"></div>
   </div>
+  <div id="errorBox"></div>
 
   <div id="results">
     <div class="result-header fade-up d1">
@@ -351,8 +600,32 @@
     </div>
     <div class="stats fade-up d2" id="statsRow"></div>
     <div class="objective-card fade-up d3">
-      <div class="objective-label">Campaign Objective</div>
+      <div class="objective-label">Suggested GTM Motion</div>
       <div class="objective-text" id="objective"></div>
+    </div>
+    <div class="truth-strip fade-up d3">
+      <div class="truth-card">
+        <strong>Why This Account</strong>
+        <span id="whyThisAccount"></span>
+      </div>
+      <div class="truth-card">
+        <strong>Work Eliminated</strong>
+        <span id="workSaved"></span>
+      </div>
+      <div class="truth-card">
+        <strong>Suggested First Action</strong>
+        <span id="firstAction"></span>
+      </div>
+    </div>
+    <div class="two-col fade-up d4">
+      <div class="panel">
+        <div class="panel-title">Signal Evidence</div>
+        <div id="signalEvidence" class="meta-list"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Why Now</div>
+        <div id="whyNow" class="panel-copy"></div>
+      </div>
     </div>
     <div class="two-col fade-up d4">
       <div class="panel">
@@ -364,6 +637,10 @@
         <div id="tactics"></div>
       </div>
     </div>
+    <div class="panel fade-up d5" style="margin-bottom:24px;">
+      <div class="panel-title">Planning Assumptions</div>
+      <div id="assumptions" class="assumption-list"></div>
+    </div>
     <div id="hubspotRow" class="fade-up d5"></div>
   </div>
 </main>
@@ -371,16 +648,17 @@
 <script>
 const STEPS = [
   "Detecting buying signal…",
-  "Scoring account fit & intent…",
-  "Simulating buying committee with AI…",
-  "Generating personalized campaign…",
-  "Finalizing GTM plan…",
+  "Scoring account fit, intent, and timing…",
+  "Building the likely buying committee…",
+  "Writing the first GTM motion…",
+  "Packaging a CRM-ready opportunity…",
 ];
 
 let stepTimer;
 
 function showLoader() {
   const stepsEl = document.getElementById("loaderSteps");
+  document.getElementById("errorBox").innerHTML = "";
   document.getElementById("loader").classList.add("active");
   document.getElementById("results").classList.remove("visible");
   stepsEl.innerHTML = "";
@@ -405,9 +683,77 @@ function hideLoader() {
   document.getElementById("loader").classList.remove("active");
 }
 
+function showPipelineError(message) {
+  document.getElementById("errorBox").innerHTML = `
+    <div class="error-card">
+      <strong>Live signal lookup took too long or failed.</strong>
+      ${message || "For demo speed, run the same GTM pipeline with the signal provided manually."}
+      <br>
+      <button type="button" onclick="runFastDemo()">Run fast demo without live lookup</button>
+    </div>
+  `;
+}
+
+function runFastDemo() {
+  document.getElementById("company").value = document.getElementById("company").value.trim() || "Anysphere";
+  document.getElementById("signal").value = document.getElementById("signal").value || "funding_round";
+  document.getElementById("amount").value = document.getElementById("amount").value.trim() || "2300000000";
+  document.getElementById("liveToggle").checked = false;
+  document.getElementById("hsToggle").checked = false;
+  runPipeline();
+}
+
+async function runMarketScan() {
+  const signal = document.getElementById("scanSignal").value;
+  const days = Number(document.getElementById("scanDays").value);
+  const focus = document.getElementById("scanFocus").value.trim() || "B2B SaaS";
+  const resultsEl = document.getElementById("scanResults");
+  resultsEl.innerHTML = `<div class="meta-item">Scanning live web results for ${signal.replace(/_/g, " ")} leads…</div>`;
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 45000);
+    const res = await fetch("/webhook/market-scan", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      signal: controller.signal,
+      body: JSON.stringify({
+        signal_type: signal,
+        days_back: days,
+        focus: focus,
+      }),
+    });
+    clearTimeout(timeoutId);
+    if (!res.ok) throw new Error(await res.text());
+    const leads = await res.json();
+    if (!leads.length) {
+      resultsEl.innerHTML = `<div class="meta-item">No live leads found for that scan. Try broadening the focus or using funding over hiring.</div>`;
+      return;
+    }
+    resultsEl.innerHTML = leads.slice(0, 8).map((lead, index) => `
+      <div class="scan-item">
+        <strong>${index + 1}. ${lead.company_name}</strong>
+        <div class="verify-pill">source-backed${lead.source_domain ? ` • ${lead.source_domain}` : ""}</div>
+        <div>${lead.signal_type.replace(/_/g, " ")}${lead.signal_amount ? ` • $${Number(lead.signal_amount).toLocaleString()}` : ""}</div>
+        <div style="margin:8px 0 10px; color:#d4d0f0; line-height:1.6;">${lead.signal_summary}</div>
+        ${lead.signal_source_url ? `<a href="${lead.signal_source_url}" target="_blank" rel="noreferrer">Open source</a>` : ""}
+        ${lead.signal_source_query ? `<div style="margin-top:8px; color:var(--muted); font-size:12px;">Query: ${lead.signal_source_query}</div>` : ""}
+        ${lead.warm_paths && lead.warm_paths.length ? `
+          <div class="warm-path">
+            Warm path: ${lead.warm_paths[0].name} — ${lead.warm_paths[0].role}. Verify before creating a CRM contact.
+          </div>` : ""}
+      </div>
+    `).join("");
+  } catch (err) {
+    resultsEl.innerHTML = `<div class="meta-item">Scan failed or timed out. Try Focus = startup and Timeline = Last 30 days, or use the top form with live mode off for a fast fallback demo.</div>`;
+  }
+}
+
 async function runPipeline() {
   const company = document.getElementById("company").value.trim();
   const signal = document.getElementById("signal").value;
+  const amount = document.getElementById("amount").value.trim();
+  const liveMode = document.getElementById("liveToggle").checked;
   if (!company) { document.getElementById("company").focus(); return; }
 
   document.getElementById("runBtn").disabled = true;
@@ -415,25 +761,40 @@ async function runPipeline() {
 
   try {
     const pushHs = document.getElementById("hsToggle").checked;
-    const res = await fetch(`/webhook/signal?push_to_hubspot=${pushHs}`, {
+    const endpoint = liveMode
+      ? `/webhook/run?push_to_hubspot=${pushHs}`
+      : `/webhook/signal?push_to_hubspot=${pushHs}`;
+    const payload = liveMode
+      ? {
+          company_name: company,
+          preferred_signal: signal,
+        }
+      : {
+          company_name: company,
+          signal_type: signal,
+          amount: amount ? Number(amount) : null,
+        };
+
+    const res = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ company_name: company, signal_type: signal }),
+      body: JSON.stringify(payload),
     });
     if (!res.ok) throw new Error(await res.text());
-    const data = await res.json();
+    const response = await res.json();
+    const data = liveMode ? (Array.isArray(response) ? response[0] : response) : response;
     hideLoader();
     renderResults(data);
   } catch (err) {
     hideLoader();
-    alert("Pipeline error: " + err.message);
+    showPipelineError(err.message);
   } finally {
     document.getElementById("runBtn").disabled = false;
   }
 }
 
 function renderResults(d) {
-  document.getElementById("resultTitle").textContent = `${d.company_name} — GTM Plan`;
+  document.getElementById("resultTitle").textContent = `${d.company_name} — opportunity created from ${d.signal_type.replace(/_/g, " ")}`;
   const tb = document.getElementById("tierBadge");
   tb.textContent = `${d.tier} Tier`;
   tb.className = `tier-badge tier-${d.tier}`;
@@ -466,17 +827,58 @@ function renderResults(d) {
   }, 100);
 
   document.getElementById("objective").textContent = d.objective;
+  document.getElementById("whyThisAccount").textContent = d.why_this_account;
+  document.getElementById("workSaved").textContent = d.work_saved;
+  document.getElementById("firstAction").textContent = d.suggested_first_action;
+  document.getElementById("whyNow").textContent = d.why_now;
 
-  const personas = [...new Set(d.raw_tactics.map(t => t.target_persona))];
+  document.getElementById("signalEvidence").innerHTML = `
+    <div class="meta-item">
+      <strong>Detected Signal</strong>
+      ${d.signal_type.replace(/_/g, " ")}
+    </div>
+    ${d.signal_amount ? `
+      <div class="meta-item">
+        <strong>Signal Amount</strong>
+        $${Number(d.signal_amount).toLocaleString()}
+      </div>` : ""}
+    <div class="meta-item">
+      <strong>Signal Summary</strong>
+      ${d.signal_summary}
+    </div>
+    <div class="meta-item">
+      <strong>Estimated Account Snapshot</strong>
+      Industry: ${d.account_snapshot.industry || "unknown"}<br>
+      Employees: ${d.account_snapshot.employee_count_estimate || "unknown"}<br>
+      Revenue: ${d.account_snapshot.annual_revenue_estimate ? "$" + Number(d.account_snapshot.annual_revenue_estimate).toLocaleString() : "unknown"}
+    </div>
+    ${d.signal_source_url ? `
+      <div class="meta-item">
+        <strong>Source</strong>
+        <a href="${d.signal_source_url}" target="_blank" rel="noreferrer">Open source link</a>
+      </div>` : ""}
+    ${d.signal_source_query ? `
+      <div class="meta-item">
+        <strong>Apify Query</strong>
+        ${d.signal_source_query}
+      </div>` : ""}
+    ${d.warm_paths && d.warm_paths.length ? `
+      <div class="meta-item">
+        <strong>Warm Path</strong>
+        ${d.warm_paths[0].name} — ${d.warm_paths[0].role}<br>
+        <span style="color:var(--muted);">Verify before creating a CRM contact.</span>
+      </div>` : ""}
+  `;
+
   const avatars = ["💼","🔬","🏆","👤","🎯"];
   const colors = ["rgba(124,92,252,0.15)","rgba(34,197,94,0.12)","rgba(245,158,11,0.12)","rgba(59,130,246,0.12)"];
-  document.getElementById("committee").innerHTML = personas.map((p, i) => `
+  document.getElementById("committee").innerHTML = d.buying_committee.map((p, i) => `
     <div class="persona">
       <div class="persona-avatar" style="background:${colors[i % colors.length]}">${avatars[i % avatars.length]}</div>
       <div class="persona-info">
-        <div class="persona-title">${p}</div>
-        <div class="persona-role">buying committee member</div>
-        <div class="influence-bar"><div class="influence-fill" style="width:${Math.max(85 - i * 18, 30)}%"></div></div>
+        <div class="persona-title">${p.title}</div>
+        <div class="persona-role">${String(p.role).replace(/_/g, " ")} • ${p.primary_pain}</div>
+        <div class="influence-bar"><div class="influence-fill" style="width:${Math.round((p.influence_score || 0) * 100)}%"></div></div>
       </div>
     </div>`).join("");
 
@@ -489,9 +891,13 @@ function renderResults(d) {
       <div class="tactic-msg">${t.message}</div>
     </div>`).join("");
 
+  document.getElementById("assumptions").innerHTML = d.assumptions
+    .map(a => `<div class="assumption">${a}</div>`)
+    .join("");
+
   const hsRow = document.getElementById("hubspotRow");
   hsRow.innerHTML = d.hubspot
-    ? `<a class="hs-badge" href="${d.hubspot.portal_url}" target="_blank">🔗 View in HubSpot — Company + Deal created</a>`
+    ? `<a class="hs-badge" href="${d.hubspot.portal_url}" target="_blank">🔗 View in HubSpot — opportunity synced with signal context and next step</a>`
     : "";
 
   document.getElementById("results").classList.add("visible");
@@ -505,6 +911,12 @@ function renderResults(d) {
 document.getElementById("company").addEventListener("keydown", e => {
   if (e.key === "Enter") runPipeline();
 });
+
+function applyPreset(company, signal, amount) {
+  document.getElementById("company").value = company;
+  document.getElementById("signal").value = signal;
+  document.getElementById("amount").value = amount || "";
+}
 </script>
 </body>
 </html>
