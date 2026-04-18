@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GTM OS — Signal Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #18181f;
+      --border: #2a2a35;
+      --accent: #7c5cfc;
+      --accent2: #a78bfa;
+      --green: #22c55e;
+      --yellow: #f59e0b;
+      --red: #ef4444;
+      --text: #f1f0ff;
+      --muted: #6b6b80;
+      --mono: 'JetBrains Mono', monospace;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(124,92,252,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(124,92,252,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px; height: 500px;
+      background: radial-gradient(ellipse, rgba(124,92,252,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      position: relative;
+      z-index: 1;
+    }
+    .logo { display: flex; align-items: center; gap: 10px; }
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--accent), #a855f7);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+    .logo-text { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
+    .logo-sub { font-size: 12px; color: var(--muted); }
+    .badge {
+      margin-left: auto;
+      background: rgba(124,92,252,0.15);
+      border: 1px solid rgba(124,92,252,0.3);
+      color: var(--accent2);
+      padding: 4px 12px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    main {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 60px 24px 120px;
+      position: relative;
+      z-index: 1;
+    }
+    .hero { text-align: center; margin-bottom: 56px; }
+    .hero h1 {
+      font-size: 52px;
+      font-weight: 700;
+      letter-spacing: -1.5px;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #fff 30%, var(--accent2) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 16px;
+    }
+    .hero p { color: var(--muted); font-size: 18px; max-width: 520px; margin: 0 auto; line-height: 1.6; }
+    .input-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 40px;
+    }
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr 200px auto;
+      gap: 12px;
+      align-items: end;
+    }
+    .field label {
+      display: block;
+      font-size: 12px; font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.8px;
+      margin-bottom: 8px;
+    }
+    .field input, .field select {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-family: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+    .field input:focus, .field select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(124,92,252,0.15);
+    }
+    .field select option { background: #1a1a2e; }
+    .run-btn {
+      background: linear-gradient(135deg, var(--accent), #9333ea);
+      color: white; border: none;
+      padding: 12px 28px;
+      border-radius: 10px;
+      font-size: 15px; font-weight: 600;
+      cursor: pointer; font-family: inherit;
+      transition: opacity 0.2s, transform 0.1s;
+      white-space: nowrap; height: 46px;
+    }
+    .run-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .run-btn:active { transform: translateY(0); }
+    .run-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* Loader */
+    .loader { display: none; text-align: center; padding: 60px 0; }
+    .loader.active { display: block; }
+    .spinner {
+      width: 48px; height: 48px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 24px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loader-steps { display: flex; flex-direction: column; gap: 10px; max-width: 280px; margin: 0 auto; }
+    .step {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13px; color: var(--muted);
+      opacity: 0; animation: fadeIn 0.4s forwards;
+    }
+    .step.done { color: var(--green); }
+    .step-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+    @keyframes fadeIn { to { opacity: 1; } }
+
+    /* Results */
+    #results { display: none; }
+    #results.visible { display: block; }
+    .result-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .result-title { font-size: 24px; font-weight: 700; }
+    .tier-badge {
+      padding: 6px 20px; border-radius: 100px;
+      font-size: 14px; font-weight: 700; letter-spacing: 0.5px;
+    }
+    .tier-A { background: rgba(34,197,94,0.15); color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+    .tier-B { background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); }
+    .tier-C { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+    .stats {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 16px; margin-bottom: 24px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px;
+    }
+    .stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-bottom: 8px; }
+    .stat-value { font-size: 28px; font-weight: 700; line-height: 1; }
+    .stat-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .score-bar { height: 4px; background: var(--border); border-radius: 4px; margin-top: 10px; overflow: hidden; }
+    .score-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width 1.2s cubic-bezier(0.22,1,0.36,1); }
+
+    .objective-card {
+      background: linear-gradient(135deg, rgba(124,92,252,0.08), rgba(168,85,247,0.04));
+      border: 1px solid rgba(124,92,252,0.2);
+      border-radius: 12px; padding: 24px; margin-bottom: 24px;
+    }
+    .objective-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--accent2); font-weight: 600; margin-bottom: 10px; }
+    .objective-text { font-size: 15px; line-height: 1.7; color: var(--text); }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+    .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
+    .panel-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-bottom: 16px; font-weight: 600; }
+
+    .persona { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .persona:last-child { border-bottom: none; }
+    .persona-avatar {
+      width: 36px; height: 36px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; flex-shrink: 0;
+    }
+    .persona-info { flex: 1; }
+    .persona-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+    .persona-role { font-size: 11px; color: var(--muted); }
+    .influence-bar { width: 60px; height: 3px; background: var(--border); border-radius: 4px; overflow: hidden; margin-top: 6px; }
+    .influence-fill { height: 100%; background: var(--accent); border-radius: 4px; }
+
+    .tactic { padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .tactic:last-child { border-bottom: none; }
+    .tactic-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .channel-tag {
+      font-size: 10px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.6px; padding: 3px 8px; border-radius: 4px;
+      font-family: var(--mono);
+    }
+    .ch-email        { background: rgba(59,130,246,0.15);  color: #60a5fa; }
+    .ch-linkedin     { background: rgba(14,165,233,0.15);  color: #38bdf8; }
+    .ch-content      { background: rgba(168,85,247,0.15);  color: #c084fc; }
+    .ch-webinar      { background: rgba(34,197,94,0.15);   color: #4ade80; }
+    .ch-outbound_call{ background: rgba(245,158,11,0.15);  color: #fbbf24; }
+    .ch-paid_search  { background: rgba(239,68,68,0.15);   color: #f87171; }
+    .ch-direct_mail  { background: rgba(156,163,175,0.15); color: #9ca3af; }
+    .tactic-persona { font-size: 11px; color: var(--muted); }
+    .tactic-msg { font-size: 13px; line-height: 1.6; color: #d4d0f0; }
+
+    .hs-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,122,0,0.1); border: 1px solid rgba(255,122,0,0.25);
+      color: #fb923c; padding: 10px 18px; border-radius: 8px;
+      font-size: 13px; font-weight: 500; text-decoration: none; margin-top: 8px;
+    }
+
+    .fade-up { opacity: 0; transform: translateY(16px); animation: fadeUp 0.5s forwards; }
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+    .d1 { animation-delay: 0.05s; } .d2 { animation-delay: 0.15s; }
+    .d3 { animation-delay: 0.25s; } .d4 { animation-delay: 0.35s; }
+    .d5 { animation-delay: 0.45s; }
+
+    @media (max-width: 700px) {
+      .input-row { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: 1fr 1fr; }
+      .two-col { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 32px; }
+      header { padding: 16px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">⚡</div>
+    <div>
+      <div class="logo-text">GTM OS</div>
+      <div class="logo-sub">Signal Intelligence Platform</div>
+    </div>
+  </div>
+  <div class="badge">Claude + Apify + HubSpot</div>
+</header>
+
+<main>
+  <div class="hero">
+    <h1>Turn Signals Into<br>Revenue Pipeline</h1>
+    <p>Enter any company. GTM OS detects buying signals, simulates the buying committee with AI, and generates a personalized campaign — in seconds.</p>
+  </div>
+
+  <div class="input-card">
+    <div class="input-row">
+      <div class="field">
+        <label>Company Name</label>
+        <input type="text" id="company" placeholder="e.g. Cursor, Ramp, Rippling…" />
+      </div>
+      <div class="field">
+        <label>Signal Type</label>
+        <select id="signal">
+          <option value="funding_round">💰 Funding Round</option>
+          <option value="hiring_surge">📈 Hiring Surge</option>
+          <option value="product_launch">🚀 Product Launch</option>
+          <option value="leadership_change">👤 Leadership Change</option>
+          <option value="tech_install">🔧 Tech Install</option>
+        </select>
+      </div>
+      <button class="run-btn" id="runBtn" onclick="runPipeline()">
+        Run Pipeline →
+      </button>
+    </div>
+  </div>
+
+  <div class="loader" id="loader">
+    <div class="spinner"></div>
+    <div class="loader-steps" id="loaderSteps"></div>
+  </div>
+
+  <div id="results">
+    <div class="result-header fade-up d1">
+      <div class="result-title" id="resultTitle"></div>
+      <div class="tier-badge" id="tierBadge"></div>
+    </div>
+    <div class="stats fade-up d2" id="statsRow"></div>
+    <div class="objective-card fade-up d3">
+      <div class="objective-label">Campaign Objective</div>
+      <div class="objective-text" id="objective"></div>
+    </div>
+    <div class="two-col fade-up d4">
+      <div class="panel">
+        <div class="panel-title">Buying Committee</div>
+        <div id="committee"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Campaign Tactics</div>
+        <div id="tactics"></div>
+      </div>
+    </div>
+    <div id="hubspotRow" class="fade-up d5"></div>
+  </div>
+</main>
+
+<script>
+const STEPS = [
+  "Detecting buying signal…",
+  "Scoring account fit & intent…",
+  "Simulating buying committee with AI…",
+  "Generating personalized campaign…",
+  "Finalizing GTM plan…",
+];
+
+let stepTimer;
+
+function showLoader() {
+  const stepsEl = document.getElementById("loaderSteps");
+  document.getElementById("loader").classList.add("active");
+  document.getElementById("results").classList.remove("visible");
+  stepsEl.innerHTML = "";
+  let i = 0;
+  function next() {
+    if (i >= STEPS.length) return;
+    const prev = stepsEl.querySelector(".step:last-child");
+    if (prev) prev.classList.add("done");
+    const el = document.createElement("div");
+    el.className = "step";
+    el.style.animationDelay = `${i * 0.5}s`;
+    el.innerHTML = `<div class="step-dot"></div><span>${STEPS[i]}</span>`;
+    stepsEl.appendChild(el);
+    i++;
+    stepTimer = setTimeout(next, 1400);
+  }
+  next();
+}
+
+function hideLoader() {
+  clearTimeout(stepTimer);
+  document.getElementById("loader").classList.remove("active");
+}
+
+async function runPipeline() {
+  const company = document.getElementById("company").value.trim();
+  const signal = document.getElementById("signal").value;
+  if (!company) { document.getElementById("company").focus(); return; }
+
+  document.getElementById("runBtn").disabled = true;
+  showLoader();
+
+  try {
+    const res = await fetch("/webhook/signal?push_to_hubspot=false", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ company_name: company, signal_type: signal }),
+    });
+    if (!res.ok) throw new Error(await res.text());
+    const data = await res.json();
+    hideLoader();
+    renderResults(data);
+  } catch (err) {
+    hideLoader();
+    alert("Pipeline error: " + err.message);
+  } finally {
+    document.getElementById("runBtn").disabled = false;
+  }
+}
+
+function renderResults(d) {
+  document.getElementById("resultTitle").textContent = `${d.company_name} — GTM Plan`;
+  const tb = document.getElementById("tierBadge");
+  tb.textContent = `${d.tier} Tier`;
+  tb.className = `tier-badge tier-${d.tier}`;
+
+  document.getElementById("statsRow").innerHTML = `
+    <div class="stat-card">
+      <div class="stat-label">Composite Score</div>
+      <div class="stat-value">${d.composite_score}<span style="font-size:16px;color:var(--muted)">/100</span></div>
+      <div class="score-bar"><div class="score-fill" id="scoreBar" style="width:0%"></div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Buyers Simulated</div>
+      <div class="stat-value">${d.committee_size}</div>
+      <div class="stat-sub">in committee</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Top Persona</div>
+      <div class="stat-value" style="font-size:15px;margin-top:6px;line-height:1.3">${d.top_persona}</div>
+      <div class="stat-sub">highest influence</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Sequence</div>
+      <div class="stat-value">${d.sequence_days}<span style="font-size:16px;color:var(--muted)">d</span></div>
+      <div class="stat-sub">${d.raw_tactics.length} tactics planned</div>
+    </div>`;
+
+  setTimeout(() => {
+    const bar = document.getElementById("scoreBar");
+    if (bar) bar.style.width = d.composite_score + "%";
+  }, 100);
+
+  document.getElementById("objective").textContent = d.objective;
+
+  const personas = [...new Set(d.raw_tactics.map(t => t.target_persona))];
+  const avatars = ["💼","🔬","🏆","👤","🎯"];
+  const colors = ["rgba(124,92,252,0.15)","rgba(34,197,94,0.12)","rgba(245,158,11,0.12)","rgba(59,130,246,0.12)"];
+  document.getElementById("committee").innerHTML = personas.map((p, i) => `
+    <div class="persona">
+      <div class="persona-avatar" style="background:${colors[i % colors.length]}">${avatars[i % avatars.length]}</div>
+      <div class="persona-info">
+        <div class="persona-title">${p}</div>
+        <div class="persona-role">buying committee member</div>
+        <div class="influence-bar"><div class="influence-fill" style="width:${Math.max(85 - i * 18, 30)}%"></div></div>
+      </div>
+    </div>`).join("");
+
+  document.getElementById("tactics").innerHTML = d.raw_tactics.map(t => `
+    <div class="tactic">
+      <div class="tactic-header">
+        <span class="channel-tag ch-${t.channel}">${t.channel.replace(/_/g," ")}</span>
+        <span class="tactic-persona">→ ${t.target_persona}</span>
+      </div>
+      <div class="tactic-msg">${t.message}</div>
+    </div>`).join("");
+
+  const hsRow = document.getElementById("hubspotRow");
+  hsRow.innerHTML = d.hubspot
+    ? `<a class="hs-badge" href="${d.hubspot.portal_url}" target="_blank">🔗 View in HubSpot — Company + Deal created</a>`
+    : "";
+
+  document.getElementById("results").classList.add("visible");
+  document.querySelectorAll("#results .fade-up").forEach(el => {
+    el.style.animation = "none";
+    void el.offsetHeight;
+    el.style.animation = "";
+  });
+}
+
+document.getElementById("company").addEventListener("keydown", e => {
+  if (e.key === "Enter") runPipeline();
+});
+</script>
+</body>
+</html>
