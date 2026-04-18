@@ -1,15 +1,13 @@
 from orchestrator.models import IncomingSignal, GTMPlan
 from app.models.account import Account, Industry
 from app.services.account_scorer import AccountScorer
-from app.services.committee_sim import CommitteeSimulator
 from app.services.campaign_gen import CampaignGenerator
-
+from app.services.committee_sim import CommitteeSimulator
 
 scorer = AccountScorer()
 simulator = CommitteeSimulator()
 generator = CampaignGenerator()
 
-# Maps signal type → estimated employee count + revenue boost for scoring
 SIGNAL_BOOSTS: dict[str, dict] = {
     "funding_round":      {"employee_count": 500, "revenue": 20_000_000},
     "leadership_change":  {"employee_count": 200, "revenue": 5_000_000},
@@ -22,18 +20,19 @@ SIGNAL_BOOSTS: dict[str, dict] = {
 def route(signal: IncomingSignal) -> GTMPlan:
     boost = SIGNAL_BOOSTS.get(signal.signal_type, {})
 
-    # Build a synthetic account from the signal
     account = Account(
         id=signal.company_name.lower().replace(" ", "-"),
         name=signal.company_name,
-        industry=Industry.saas,           # default; enrich with Kalibr later
+        industry=Industry.saas,
         employee_count=boost.get("employee_count", 100),
         annual_revenue=boost.get("revenue", 1_000_000),
         tech_stack=[],
     )
 
     score = scorer.score(account)
+
     committee = simulator.simulate(account)
+
     strategy = generator.generate(account, score, committee)
 
     top_member = max(committee.members, key=lambda m: m.influence_score)
