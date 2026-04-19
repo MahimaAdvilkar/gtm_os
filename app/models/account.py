@@ -21,6 +21,8 @@ class Account(BaseModel):
     tech_stack: list[str] = Field(default_factory=list)
     location: Optional[str] = None
     website: Optional[str] = None
+    signal_context: Optional[str] = None
+    signal_type: Optional[str] = None
 
 
 class AccountScore(BaseModel):

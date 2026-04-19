@@ -54,9 +54,11 @@ Industry: {account.industry}
 Employees: {account.employee_count}
 Revenue: ${account.annual_revenue:,.0f}
 Tech Stack: {', '.join(account.tech_stack) or 'unknown'}
+Signal Type: {account.signal_type or 'unknown'}
+Source Evidence: {account.signal_context or 'not provided'}
 
 Composite Score: {base_score.composite_score}/100
-Respond in 2-3 sentences."""
+Respond in 2-3 sentences. Mention the specific signal evidence if it changes urgency."""
 
         message = self.client.messages.create(
             model="claude-sonnet-4-6",
